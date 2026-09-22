@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ORÉN Products</title>
+</head>
+<body>
+    <h1>ORÉN Products</h1>
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>Name</th>
+            <th>Size</th>
+            <th>Price (RWF)</th>
+            <th>Quantity</th>
+        </tr>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.size }}</td>
+            <td>{{ product.price }}</td>
+            <td>{{ product.quantity }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
