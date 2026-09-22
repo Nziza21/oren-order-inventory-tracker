@@ -1,5 +1,5 @@
 import sqlite3
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
@@ -24,6 +24,26 @@ def products():
     all_products = db.execute("SELECT * FROM products").fetchall()
     db.close()
     return render_template("products.html", products=all_products)
+
+
+@app.route("/products/add", methods=["GET", "POST"])
+def add_product():
+    if request.method == "POST":
+        name = request.form["name"]
+        size = request.form["size"]
+        price = request.form["price"]
+        quantity = request.form["quantity"]
+
+        db = get_db()
+        db.execute(
+            "INSERT INTO products (name, size, price, quantity) VALUES (?, ?, ?, ?)",
+            (name, size, price, quantity),
+        )
+        db.commit()
+        db.close()
+        return redirect(url_for("products"))
+
+    return render_template("add_product.html")
 
 
 if __name__ == "__main__":
