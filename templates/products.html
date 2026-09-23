@@ -18,7 +18,11 @@
             <td>{{ product.name }}</td>
             <td>{{ product.size }}</td>
             <td>{{ product.price }}</td>
+            {% if product.quantity < 5 %}
+            <td style="color: red; font-weight: bold;">{{ product.quantity }} (Low stock)</td>
+            {% else %}
             <td>{{ product.quantity }}</td>
+            {% endif %}
             <td><a href="/products/{{ product.id }}/update_stock">Update stock</a></td>
         </tr>
         {% endfor %}
