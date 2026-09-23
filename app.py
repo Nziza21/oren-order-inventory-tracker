@@ -46,5 +46,26 @@ def add_product():
     return render_template("add_product.html")
 
 
+@app.route("/products/<int:product_id>/update_stock", methods=["GET", "POST"])
+def update_stock(product_id):
+    db = get_db()
+
+    if request.method == "POST":
+        new_quantity = request.form["quantity"]
+        db.execute(
+            "UPDATE products SET quantity = ? WHERE id = ?",
+            (new_quantity, product_id),
+        )
+        db.commit()
+        db.close()
+        return redirect(url_for("products"))
+
+    product = db.execute(
+        "SELECT * FROM products WHERE id = ?", (product_id,)
+    ).fetchone()
+    db.close()
+    return render_template("update_stock.html", product=product)
+
+
 if __name__ == "__main__":
     app.run(debug=True)

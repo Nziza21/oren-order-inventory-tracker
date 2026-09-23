@@ -11,6 +11,7 @@
             <th>Size</th>
             <th>Price (RWF)</th>
             <th>Quantity</th>
+            <th>Action</th>
         </tr>
         {% for product in products %}
         <tr>
@@ -18,6 +19,7 @@
             <td>{{ product.size }}</td>
             <td>{{ product.price }}</td>
             <td>{{ product.quantity }}</td>
+            <td><a href="/products/{{ product.id }}/update_stock">Update stock</a></td>
         </tr>
         {% endfor %}
     </table>

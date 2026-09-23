@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Stock</title>
+</head>
+<body>
+    <h1>Update Stock: {{ product.name }} ({{ product.size }})</h1>
+    <p>Current quantity: {{ product.quantity }}</p>
+    <form method="POST">
+        <label>New quantity: <input type="number" name="quantity" value="{{ product.quantity }}" required></label><br><br>
+        <button type="submit">Update</button>
+    </form>
+</body>
+</html>
