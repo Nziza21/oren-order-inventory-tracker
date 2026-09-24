@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Order</title>
+</head>
+<body>
+    <h1>Record a New Order</h1>
+    <form method="POST">
+        <label>Customer name: <input type="text" name="customer" required></label><br><br>
+
+        <label>Product:
+            <select name="product_id" required>
+                {% for product in products %}
+                <option value="{{ product.id }}">{{ product.name }} ({{ product.size }}) - {{ product.quantity }} in stock</option>
+                {% endfor %}
+            </select>
+        </label><br><br>
+
+        <label>Quantity: <input type="number" name="quantity" min="1" required></label><br><br>
+
+        <label>Payment status:
+            <select name="payment_status">
+                <option value="unpaid">Unpaid</option>
+                <option value="paid">Paid</option>
+            </select>
+        </label><br><br>
+
+        <button type="submit">Record Order</button>
+    </form>
+</body>
+</html>

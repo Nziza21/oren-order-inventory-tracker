@@ -1,5 +1,6 @@
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for
+from datetime import date
 
 app = Flask(__name__)
 
@@ -66,6 +67,40 @@ def update_stock(product_id):
     db.close()
     return render_template("update_stock.html", product=product)
 
+
+@app.route("/orders/add", methods=["GET", "POST"])
+def add_order():
+    db = get_db()
+
+    if request.method == "POST":
+        customer = request.form["customer"]
+        product_id = request.form["product_id"]
+        quantity = int(request.form["quantity"])
+        payment_status = request.form["payment_status"]
+
+        db.execute(
+            "INSERT INTO orders (customer, order_date, payment_status, order_status) VALUES (?, ?, ?, ?)",
+            (customer, str(date.today()), payment_status, "new"),
+        )
+        order_id = db.execute("SELECT last_insert_rowid()").fetchone()[0]
+
+        db.execute(
+            "INSERT INTO order_items (order_id, product_id, quantity) VALUES (?, ?, ?)",
+            (order_id, product_id, quantity),
+        )
+
+        db.execute(
+            "UPDATE products SET quantity = quantity - ? WHERE id = ?",
+            (quantity, product_id),
+        )
+
+        db.commit()
+        db.close()
+        return redirect(url_for("products"))
+
+    all_products = db.execute("SELECT * FROM products").fetchall()
+    db.close()
+    return render_template("add_order.html", products=all_products)
 
 if __name__ == "__main__":
     app.run(debug=True)
