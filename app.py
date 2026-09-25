@@ -1,6 +1,6 @@
 import sqlite3
-from flask import Flask, render_template, request, redirect, url_for
 from datetime import date
+from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
@@ -78,6 +78,14 @@ def add_order():
         quantity = int(request.form["quantity"])
         payment_status = request.form["payment_status"]
 
+        product = db.execute(
+            "SELECT * FROM products WHERE id = ?", (product_id,)
+        ).fetchone()
+
+        if quantity > product["quantity"]:
+            db.close()
+            return f"Not enough stock. Only {product['quantity']} left of {product['name']} ({product['size']})."
+
         db.execute(
             "INSERT INTO orders (customer, order_date, payment_status, order_status) VALUES (?, ?, ?, ?)",
             (customer, str(date.today()), payment_status, "new"),
@@ -101,6 +109,15 @@ def add_order():
     all_products = db.execute("SELECT * FROM products").fetchall()
     db.close()
     return render_template("add_order.html", products=all_products)
+
+
+@app.route("/orders")
+def orders():
+    db = get_db()
+    all_orders = db.execute("SELECT * FROM orders").fetchall()
+    db.close()
+    return render_template("orders.html", orders=all_orders)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
