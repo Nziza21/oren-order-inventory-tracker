@@ -119,5 +119,25 @@ def orders():
     return render_template("orders.html", orders=all_orders)
 
 
+@app.route("/orders/<int:order_id>/update", methods=["GET", "POST"])
+def update_order(order_id):
+    db = get_db()
+
+    if request.method == "POST":
+        db.execute(
+            "UPDATE orders SET payment_status = ?, order_status = ? WHERE id = ?",
+            (request.form["payment_status"], request.form["order_status"], order_id),
+        )
+        db.commit()
+        db.close()
+        return redirect(url_for("orders"))
+
+    order = db.execute(
+        "SELECT * FROM orders WHERE id = ?", (order_id,)
+    ).fetchone()
+    db.close()
+    return render_template("update_order.html", order=order)
+
+
 if __name__ == "__main__":
     app.run(debug=True)

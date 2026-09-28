@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Order</title>
+</head>
+<body>
+    <h1>Update Order #{{ order.id }} ({{ order.customer }})</h1>
+    <form method="POST">
+        <label>Payment status:
+            <select name="payment_status">
+                <option value="unpaid" {% if order.payment_status == "unpaid" %}selected{% endif %}>Unpaid</option>
+                <option value="paid" {% if order.payment_status == "paid" %}selected{% endif %}>Paid</option>
+            </select>
+        </label><br><br>
+
+        <label>Order status:
+            <select name="order_status">
+                <option value="new" {% if order.order_status == "new" %}selected{% endif %}>New</option>
+                <option value="packed" {% if order.order_status == "packed" %}selected{% endif %}>Packed</option>
+                <option value="delivered" {% if order.order_status == "delivered" %}selected{% endif %}>Delivered</option>
+            </select>
+        </label><br><br>
+
+        <button type="submit">Save</button>
+    </form>
+</body>
+</html>
