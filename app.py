@@ -1,14 +1,55 @@
+import os
 import sqlite3
 from datetime import date
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+
+load_dotenv()
 
 app = Flask(__name__)
+app.secret_key = "change-this-to-something-random"
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+
+ADMIN_PASSWORD_HASH = generate_password_hash(os.environ.get("ADMIN_PASSWORD", "changeme"))
+
+
+class Admin(UserMixin):
+    id = "admin"
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    if user_id == "admin":
+        return Admin()
+    return None
 
 
 def get_db():
     connection = sqlite3.connect("oren.db")
     connection.row_factory = sqlite3.Row
     return connection
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        password = request.form["password"]
+        if check_password_hash(ADMIN_PASSWORD_HASH, password):
+            login_user(Admin())
+            return redirect(url_for("products"))
+        return "Wrong password. Go back and try again."
+    return render_template("login.html")
+
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for("login"))
 
 
 @app.route("/")
@@ -20,6 +61,7 @@ def home():
 
 
 @app.route("/products")
+@login_required
 def products():
     db = get_db()
     all_products = db.execute("SELECT * FROM products").fetchall()
@@ -28,6 +70,7 @@ def products():
 
 
 @app.route("/products/add", methods=["GET", "POST"])
+@login_required
 def add_product():
     if request.method == "POST":
         name = request.form["name"]
@@ -48,6 +91,7 @@ def add_product():
 
 
 @app.route("/products/<int:product_id>/update_stock", methods=["GET", "POST"])
+@login_required
 def update_stock(product_id):
     db = get_db()
 
@@ -69,6 +113,7 @@ def update_stock(product_id):
 
 
 @app.route("/orders/add", methods=["GET", "POST"])
+@login_required
 def add_order():
     db = get_db()
 
@@ -112,6 +157,7 @@ def add_order():
 
 
 @app.route("/orders")
+@login_required
 def orders():
     db = get_db()
     all_orders = db.execute("SELECT * FROM orders").fetchall()
@@ -120,6 +166,7 @@ def orders():
 
 
 @app.route("/orders/<int:order_id>/update", methods=["GET", "POST"])
+@login_required
 def update_order(order_id):
     db = get_db()
 
