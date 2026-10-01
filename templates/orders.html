@@ -5,6 +5,11 @@
 </head>
 <body>
     <h1>ORÉN Orders</h1>
+    <form method="GET" action="/orders/search">
+    <input type="text" name="q" placeholder="Search by customer name" value="{{ search_query or '' }}">
+    <button type="submit">Search</button>
+    </form>
+    <br>
     <table border="1" cellpadding="8">
         <tr>
             <th>Order ID</th>

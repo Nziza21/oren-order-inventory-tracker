@@ -8,15 +8,17 @@
     <form method="POST">
         <label>Customer name: <input type="text" name="customer" required></label><br><br>
 
-        <label>Product:
-            <select name="product_id" required>
-                {% for product in products %}
-                <option value="{{ product.id }}">{{ product.name }} ({{ product.size }}) - {{ product.quantity }} in stock</option>
-                {% endfor %}
-            </select>
-        </label><br><br>
-
-        <label>Quantity: <input type="number" name="quantity" min="1" required></label><br><br>
+        <div id="items">
+            <div class="item-row">
+                <select name="product_id">
+                    {% for product in products %}
+                    <option value="{{ product.id }}">{{ product.name }} ({{ product.size }}) - {{ product.quantity }} in stock</option>
+                    {% endfor %}
+                </select>
+                <input type="number" name="quantity" min="1" placeholder="Qty" required>
+            </div>
+        </div>
+        <button type="button" onclick="addItemRow()">+ Add another item</button><br><br>
 
         <label>Payment status:
             <select name="payment_status">
@@ -27,5 +29,14 @@
 
         <button type="submit">Record Order</button>
     </form>
+
+    <script>
+        function addItemRow() {
+            const container = document.getElementById("items");
+            const newRow = container.children[0].cloneNode(true);
+            newRow.querySelectorAll("input").forEach(input => input.value = "");
+            container.appendChild(newRow);
+        }
+    </script>
 </body>
 </html>

@@ -119,17 +119,18 @@ def add_order():
 
     if request.method == "POST":
         customer = request.form["customer"]
-        product_id = request.form["product_id"]
-        quantity = int(request.form["quantity"])
         payment_status = request.form["payment_status"]
+        product_ids = request.form.getlist("product_id")
+        quantities = request.form.getlist("quantity")
 
-        product = db.execute(
-            "SELECT * FROM products WHERE id = ?", (product_id,)
-        ).fetchone()
-
-        if quantity > product["quantity"]:
-            db.close()
-            return f"Not enough stock. Only {product['quantity']} left of {product['name']} ({product['size']})."
+        for product_id, quantity in zip(product_ids, quantities):
+            quantity = int(quantity)
+            product = db.execute(
+                "SELECT * FROM products WHERE id = ?", (product_id,)
+            ).fetchone()
+            if quantity > product["quantity"]:
+                db.close()
+                return f"Not enough stock. Only {product['quantity']} left of {product['name']} ({product['size']})."
 
         db.execute(
             "INSERT INTO orders (customer, order_date, payment_status, order_status) VALUES (?, ?, ?, ?)",
@@ -137,15 +138,16 @@ def add_order():
         )
         order_id = db.execute("SELECT last_insert_rowid()").fetchone()[0]
 
-        db.execute(
-            "INSERT INTO order_items (order_id, product_id, quantity) VALUES (?, ?, ?)",
-            (order_id, product_id, quantity),
-        )
-
-        db.execute(
-            "UPDATE products SET quantity = quantity - ? WHERE id = ?",
-            (quantity, product_id),
-        )
+        for product_id, quantity in zip(product_ids, quantities):
+            quantity = int(quantity)
+            db.execute(
+                "INSERT INTO order_items (order_id, product_id, quantity) VALUES (?, ?, ?)",
+                (order_id, product_id, quantity),
+            )
+            db.execute(
+                "UPDATE products SET quantity = quantity - ? WHERE id = ?",
+                (quantity, product_id),
+            )
 
         db.commit()
         db.close()
@@ -163,6 +165,18 @@ def orders():
     all_orders = db.execute("SELECT * FROM orders").fetchall()
     db.close()
     return render_template("orders.html", orders=all_orders)
+
+
+@app.route("/orders/search")
+@login_required
+def search_orders():
+    query = request.args.get("q", "")
+    db = get_db()
+    results = db.execute(
+        "SELECT * FROM orders WHERE customer LIKE ?", (f"%{query}%",)
+    ).fetchall()
+    db.close()
+    return render_template("orders.html", orders=results, search_query=query)
 
 
 @app.route("/orders/<int:order_id>/update", methods=["GET", "POST"])
