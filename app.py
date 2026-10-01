@@ -123,12 +123,16 @@ def add_order():
         product_ids = request.form.getlist("product_id")
         quantities = request.form.getlist("quantity")
 
+        totals = {}
         for product_id, quantity in zip(product_ids, quantities):
             quantity = int(quantity)
+            totals[product_id] = totals.get(product_id, 0) + quantity
+
+        for product_id, total_quantity in totals.items():
             product = db.execute(
                 "SELECT * FROM products WHERE id = ?", (product_id,)
             ).fetchone()
-            if quantity > product["quantity"]:
+            if total_quantity > product["quantity"]:
                 db.close()
                 return f"Not enough stock. Only {product['quantity']} left of {product['name']} ({product['size']})."
 
@@ -138,15 +142,14 @@ def add_order():
         )
         order_id = db.execute("SELECT last_insert_rowid()").fetchone()[0]
 
-        for product_id, quantity in zip(product_ids, quantities):
-            quantity = int(quantity)
+        for product_id, total_quantity in totals.items():
             db.execute(
                 "INSERT INTO order_items (order_id, product_id, quantity) VALUES (?, ?, ?)",
-                (order_id, product_id, quantity),
+                (order_id, product_id, total_quantity),
             )
             db.execute(
                 "UPDATE products SET quantity = quantity - ? WHERE id = ?",
-                (quantity, product_id),
+                (total_quantity, product_id),
             )
 
         db.commit()
