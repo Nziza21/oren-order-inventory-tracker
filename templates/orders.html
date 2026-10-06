@@ -21,7 +21,7 @@
         </tr>
         {% for order in orders %}
         <tr>
-            <td>{{ order.id }}</td>
+            <td><a href="/orders/{{ order.id }}">{{ order.id }}</a></td>
             <td>{{ order.customer }}</td>
             <td>{{ order.order_date }}</td>
             <td>{{ order.payment_status }}</td>

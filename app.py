@@ -203,5 +203,43 @@ def update_order(order_id):
     return render_template("update_order.html", order=order)
 
 
+@app.route("/orders/<int:order_id>")
+@login_required
+def order_detail(order_id):
+    db = get_db()
+    order = db.execute("SELECT * FROM orders WHERE id = ?", (order_id,)).fetchone()
+    items = db.execute("""
+        SELECT products.name, products.size, products.price, order_items.quantity
+        FROM order_items
+        JOIN products ON order_items.product_id = products.id
+        WHERE order_items.order_id = ?
+    """, (order_id,)).fetchall()
+    db.close()
+    return render_template("order_detail.html", order=order, items=items)
+
+
+@app.route("/sales-summary")
+@login_required
+def sales_summary():
+    db = get_db()
+
+    total_revenue = db.execute("""
+        SELECT SUM(products.price * order_items.quantity) AS total
+        FROM order_items
+        JOIN products ON order_items.product_id = products.id
+    """).fetchone()["total"] or 0
+
+    by_product = db.execute("""
+        SELECT products.name, products.size, SUM(order_items.quantity) AS total_sold,
+               SUM(products.price * order_items.quantity) AS revenue
+        FROM order_items
+        JOIN products ON order_items.product_id = products.id
+        GROUP BY products.id
+        ORDER BY total_sold DESC
+    """).fetchall()
+
+    db.close()
+    return render_template("sales_summary.html", total_revenue=total_revenue, by_product=by_product)
+
 if __name__ == "__main__":
     app.run(debug=True)

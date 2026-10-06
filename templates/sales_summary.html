@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sales Summary</title>
+</head>
+<body>
+    <h1>ORÉN Sales Summary</h1>
+    <p><strong>Total revenue: {{ total_revenue }} RWF</strong></p>
+
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>Product</th>
+            <th>Size</th>
+            <th>Units Sold</th>
+            <th>Revenue (RWF)</th>
+        </tr>
+        {% for row in by_product %}
+        <tr>
+            <td>{{ row.name }}</td>
+            <td>{{ row.size }}</td>
+            <td>{{ row.total_sold }}</td>
+            <td>{{ row.revenue }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <p><a href="/orders">Back to orders</a></p>
+</body>
+</html>

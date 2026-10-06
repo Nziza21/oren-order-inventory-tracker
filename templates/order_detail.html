@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order #{{ order.id }}</title>
+</head>
+<body>
+    <h1>Order #{{ order.id }} — {{ order.customer }}</h1>
+    <p>Date: {{ order.order_date }}</p>
+    <p>Payment: {{ order.payment_status }}</p>
+    <p>Status: {{ order.order_status }}</p>
+
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>Product</th>
+            <th>Size</th>
+            <th>Price (RWF)</th>
+            <th>Quantity</th>
+            <th>Subtotal (RWF)</th>
+        </tr>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.size }}</td>
+            <td>{{ item.price }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.price * item.quantity }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <p><a href="/orders">Back to orders</a></p>
+</body>
+</html>
