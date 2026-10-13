@@ -126,6 +126,9 @@ def add_order():
         totals = {}
         for product_id, quantity in zip(product_ids, quantities):
             quantity = int(quantity)
+            if quantity <= 0:
+                db.close()
+                return "Quantity must be at least 1 for every item."
             totals[product_id] = totals.get(product_id, 0) + quantity
 
         for product_id, total_quantity in totals.items():
@@ -227,6 +230,8 @@ def sales_summary():
         SELECT SUM(products.price * order_items.quantity) AS total
         FROM order_items
         JOIN products ON order_items.product_id = products.id
+        JOIN orders ON order_items.order_id = orders.id
+        WHERE orders.payment_status = 'paid'
     """).fetchone()["total"] or 0
 
     by_product = db.execute("""
@@ -234,6 +239,8 @@ def sales_summary():
                SUM(products.price * order_items.quantity) AS revenue
         FROM order_items
         JOIN products ON order_items.product_id = products.id
+        JOIN orders ON order_items.order_id = orders.id
+        WHERE orders.payment_status = 'paid'
         GROUP BY products.id
         ORDER BY total_sold DESC
     """).fetchall()
