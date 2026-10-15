@@ -271,6 +271,15 @@ def edit_product(product_id):
 @login_required
 def delete_product(product_id):
     db = get_db()
+
+    used_in_orders = db.execute(
+        "SELECT COUNT(*) FROM order_items WHERE product_id = ?", (product_id,)
+    ).fetchone()[0]
+
+    if used_in_orders > 0:
+        db.close()
+        return "Cannot delete this product because it appears in existing orders. Set its stock to 0 instead if it's discontinued."
+
     db.execute("DELETE FROM products WHERE id = ?", (product_id,))
     db.commit()
     db.close()
