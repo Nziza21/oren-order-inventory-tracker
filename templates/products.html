@@ -21,7 +21,7 @@
         {% else %}
         <td>{{ product.quantity }}</td>
         {% endif %}
-        <td><a href="/products/{{ product.id }}/update_stock">Update stock</a></td>
+        <td><a href="/products/{{ product.id }}/update_stock">Update stock</a> | <a href="/products/{{ product.id }}/edit">Edit</a></td>
     </tr>
     {% endfor %}
 </table>

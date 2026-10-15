@@ -248,5 +248,33 @@ def sales_summary():
     db.close()
     return render_template("sales_summary.html", total_revenue=total_revenue, by_product=by_product)
 
+@app.route("/products/<int:product_id>/edit", methods=["GET", "POST"])
+@login_required
+def edit_product(product_id):
+    db = get_db()
+
+    if request.method == "POST":
+        db.execute(
+            "UPDATE products SET name = ?, size = ?, price = ? WHERE id = ?",
+            (request.form["name"], request.form["size"], request.form["price"], product_id),
+        )
+        db.commit()
+        db.close()
+        return redirect(url_for("products"))
+
+    product = db.execute("SELECT * FROM products WHERE id = ?", (product_id,)).fetchone()
+    db.close()
+    return render_template("edit_product.html", product=product)
+
+
+@app.route("/products/<int:product_id>/delete", methods=["POST"])
+@login_required
+def delete_product(product_id):
+    db = get_db()
+    db.execute("DELETE FROM products WHERE id = ?", (product_id,))
+    db.commit()
+    db.close()
+    return redirect(url_for("products"))
+
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Edit Product{% endblock %}
+{% block content %}
+<h1>Edit Product</h1>
+<form method="POST">
+    <label>Name: <input type="text" name="name" value="{{ product.name }}" required></label><br><br>
+    <label>Size: <input type="text" name="size" value="{{ product.size }}" required></label><br><br>
+    <label>Price: <input type="number" name="price" value="{{ product.price }}" required></label><br><br>
+    <button type="submit">Save Changes</button>
+</form>
+<form method="POST" action="/products/{{ product.id }}/delete" onsubmit="return confirm('Delete this product?');">
+    <button type="submit">Delete Product</button>
+</form>
+{% endblock %}
