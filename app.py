@@ -285,5 +285,15 @@ def delete_product(product_id):
     db.close()
     return redirect(url_for("products"))
 
+@app.route("/customers/<customer_name>")
+@login_required
+def customer_history(customer_name):
+    db = get_db()
+    customer_orders = db.execute(
+        "SELECT * FROM orders WHERE customer = ? ORDER BY order_date DESC", (customer_name,)
+    ).fetchall()
+    db.close()
+    return render_template("customer_history.html", customer=customer_name, orders=customer_orders)
+
 if __name__ == "__main__":
     app.run(debug=True)

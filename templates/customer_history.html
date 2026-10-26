@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ customer }}'s Orders{% endblock %}
+{% block content %}
+<h1>{{ customer }}'s Order History</h1>
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Order ID</th>
+        <th>Date</th>
+        <th>Payment</th>
+        <th>Status</th>
+    </tr>
+    {% for order in orders %}
+    <tr>
+        <td><a href="/orders/{{ order.id }}">{{ order.id }}</a></td>
+        <td>{{ order.order_date }}</td>
+        <td>{{ order.payment_status }}</td>
+        <td>{{ order.order_status }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<p><a href="/orders">Back to orders</a></p>
+{% endblock %}
