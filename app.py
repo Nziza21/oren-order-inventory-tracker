@@ -3,7 +3,7 @@ import sqlite3
 from datetime import date
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 load_dotenv()
@@ -73,15 +73,10 @@ def products():
 @login_required
 def add_product():
     if request.method == "POST":
-        name = request.form["name"]
-        size = request.form["size"]
-        price = request.form["price"]
-        quantity = request.form["quantity"]
-
         db = get_db()
         db.execute(
             "INSERT INTO products (name, size, price, quantity) VALUES (?, ?, ?, ?)",
-            (name, size, price, quantity),
+            (request.form["name"], request.form["size"], request.form["price"], request.form["quantity"]),
         )
         db.commit()
         db.close()
@@ -96,20 +91,55 @@ def update_stock(product_id):
     db = get_db()
 
     if request.method == "POST":
-        new_quantity = request.form["quantity"]
         db.execute(
             "UPDATE products SET quantity = ? WHERE id = ?",
-            (new_quantity, product_id),
+            (request.form["quantity"], product_id),
         )
         db.commit()
         db.close()
         return redirect(url_for("products"))
 
-    product = db.execute(
-        "SELECT * FROM products WHERE id = ?", (product_id,)
-    ).fetchone()
+    product = db.execute("SELECT * FROM products WHERE id = ?", (product_id,)).fetchone()
     db.close()
     return render_template("update_stock.html", product=product)
+
+
+@app.route("/products/<int:product_id>/edit", methods=["GET", "POST"])
+@login_required
+def edit_product(product_id):
+    db = get_db()
+
+    if request.method == "POST":
+        db.execute(
+            "UPDATE products SET name = ?, size = ?, price = ? WHERE id = ?",
+            (request.form["name"], request.form["size"], request.form["price"], product_id),
+        )
+        db.commit()
+        db.close()
+        return redirect(url_for("products"))
+
+    product = db.execute("SELECT * FROM products WHERE id = ?", (product_id,)).fetchone()
+    db.close()
+    return render_template("edit_product.html", product=product)
+
+
+@app.route("/products/<int:product_id>/delete", methods=["POST"])
+@login_required
+def delete_product(product_id):
+    db = get_db()
+
+    used_in_orders = db.execute(
+        "SELECT COUNT(*) FROM order_items WHERE product_id = ?", (product_id,)
+    ).fetchone()[0]
+
+    if used_in_orders > 0:
+        db.close()
+        return "Cannot delete this product because it appears in existing orders. Set its stock to 0 instead if it's discontinued."
+
+    db.execute("DELETE FROM products WHERE id = ?", (product_id,))
+    db.commit()
+    db.close()
+    return redirect(url_for("products"))
 
 
 @app.route("/orders/add", methods=["GET", "POST"])
@@ -185,6 +215,21 @@ def search_orders():
     return render_template("orders.html", orders=results, search_query=query)
 
 
+@app.route("/orders/<int:order_id>")
+@login_required
+def order_detail(order_id):
+    db = get_db()
+    order = db.execute("SELECT * FROM orders WHERE id = ?", (order_id,)).fetchone()
+    items = db.execute("""
+        SELECT products.name, products.size, products.price, order_items.quantity
+        FROM order_items
+        JOIN products ON order_items.product_id = products.id
+        WHERE order_items.order_id = ?
+    """, (order_id,)).fetchall()
+    db.close()
+    return render_template("order_detail.html", order=order, items=items)
+
+
 @app.route("/orders/<int:order_id>/update", methods=["GET", "POST"])
 @login_required
 def update_order(order_id):
@@ -199,26 +244,42 @@ def update_order(order_id):
         db.close()
         return redirect(url_for("orders"))
 
-    order = db.execute(
-        "SELECT * FROM orders WHERE id = ?", (order_id,)
-    ).fetchone()
+    order = db.execute("SELECT * FROM orders WHERE id = ?", (order_id,)).fetchone()
     db.close()
     return render_template("update_order.html", order=order)
 
 
-@app.route("/orders/<int:order_id>")
+@app.route("/orders/<int:order_id>/cancel", methods=["POST"])
 @login_required
-def order_detail(order_id):
+def cancel_order(order_id):
     db = get_db()
-    order = db.execute("SELECT * FROM orders WHERE id = ?", (order_id,)).fetchone()
-    items = db.execute("""
-        SELECT products.name, products.size, products.price, order_items.quantity
-        FROM order_items
-        JOIN products ON order_items.product_id = products.id
-        WHERE order_items.order_id = ?
-    """, (order_id,)).fetchall()
+
+    items = db.execute(
+        "SELECT product_id, quantity FROM order_items WHERE order_id = ?", (order_id,)
+    ).fetchall()
+
+    for item in items:
+        db.execute(
+            "UPDATE products SET quantity = quantity + ? WHERE id = ?",
+            (item["quantity"], item["product_id"]),
+        )
+
+    db.execute("DELETE FROM order_items WHERE order_id = ?", (order_id,))
+    db.execute("DELETE FROM orders WHERE id = ?", (order_id,))
+    db.commit()
     db.close()
-    return render_template("order_detail.html", order=order, items=items)
+    return redirect(url_for("orders"))
+
+
+@app.route("/customers/<customer_name>")
+@login_required
+def customer_history(customer_name):
+    db = get_db()
+    customer_orders = db.execute(
+        "SELECT * FROM orders WHERE customer = ? ORDER BY order_date DESC", (customer_name,)
+    ).fetchall()
+    db.close()
+    return render_template("customer_history.html", customer=customer_name, orders=customer_orders)
 
 
 @app.route("/sales-summary")
@@ -248,52 +309,6 @@ def sales_summary():
     db.close()
     return render_template("sales_summary.html", total_revenue=total_revenue, by_product=by_product)
 
-@app.route("/products/<int:product_id>/edit", methods=["GET", "POST"])
-@login_required
-def edit_product(product_id):
-    db = get_db()
-
-    if request.method == "POST":
-        db.execute(
-            "UPDATE products SET name = ?, size = ?, price = ? WHERE id = ?",
-            (request.form["name"], request.form["size"], request.form["price"], product_id),
-        )
-        db.commit()
-        db.close()
-        return redirect(url_for("products"))
-
-    product = db.execute("SELECT * FROM products WHERE id = ?", (product_id,)).fetchone()
-    db.close()
-    return render_template("edit_product.html", product=product)
-
-
-@app.route("/products/<int:product_id>/delete", methods=["POST"])
-@login_required
-def delete_product(product_id):
-    db = get_db()
-
-    used_in_orders = db.execute(
-        "SELECT COUNT(*) FROM order_items WHERE product_id = ?", (product_id,)
-    ).fetchone()[0]
-
-    if used_in_orders > 0:
-        db.close()
-        return "Cannot delete this product because it appears in existing orders. Set its stock to 0 instead if it's discontinued."
-
-    db.execute("DELETE FROM products WHERE id = ?", (product_id,))
-    db.commit()
-    db.close()
-    return redirect(url_for("products"))
-
-@app.route("/customers/<customer_name>")
-@login_required
-def customer_history(customer_name):
-    db = get_db()
-    customer_orders = db.execute(
-        "SELECT * FROM orders WHERE customer = ? ORDER BY order_date DESC", (customer_name,)
-    ).fetchall()
-    db.close()
-    return render_template("customer_history.html", customer=customer_name, orders=customer_orders)
 
 if __name__ == "__main__":
     app.run(debug=True)

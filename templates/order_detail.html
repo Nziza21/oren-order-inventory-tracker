@@ -5,7 +5,7 @@
 <p>Date: {{ order.order_date }}</p>
 <p>Payment: {{ order.payment_status }}</p>
 <p>Status: {{ order.order_status }}</p>
-<table border="1" cellpadding="8">
+<table>
     <tr>
         <th>Product</th>
         <th>Size</th>
@@ -23,4 +23,8 @@
     </tr>
     {% endfor %}
 </table>
+<br>
+<form method="POST" action="/orders/{{ order.id }}/cancel" onsubmit="return confirm('Cancel this order? Its stock will be returned.');">
+    <button type="submit">Cancel Order</button>
+</form>
 {% endblock %}
