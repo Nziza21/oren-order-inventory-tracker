@@ -254,6 +254,11 @@ def update_order(order_id):
 def cancel_order(order_id):
     db = get_db()
 
+    order = db.execute("SELECT order_status FROM orders WHERE id = ?", (order_id,)).fetchone()
+    if order is None or order["order_status"] == "delivered":
+        db.close()
+        return "Delivered orders cannot be cancelled."
+
     items = db.execute(
         "SELECT product_id, quantity FROM order_items WHERE order_id = ?", (order_id,)
     ).fetchall()

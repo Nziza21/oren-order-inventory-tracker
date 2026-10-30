@@ -24,7 +24,9 @@
     {% endfor %}
 </table>
 <br>
+{% if order.order_status != "delivered" %}
 <form method="POST" action="/orders/{{ order.id }}/cancel" onsubmit="return confirm('Cancel this order? Its stock will be returned.');">
     <button type="submit">Cancel Order</button>
 </form>
+{% endif %}
 {% endblock %}
