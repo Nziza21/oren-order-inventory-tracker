@@ -91,9 +91,16 @@ def update_stock(product_id):
     db = get_db()
 
     if request.method == "POST":
+        old_qty = db.execute(
+            "SELECT quantity FROM products WHERE id = ?", (product_id,)
+        ).fetchone()["quantity"]
+        new_qty = int(request.form["quantity"])
         db.execute(
-            "UPDATE products SET quantity = ? WHERE id = ?",
-            (request.form["quantity"], product_id),
+            "UPDATE products SET quantity = ? WHERE id = ?", (new_qty, product_id)
+        )
+        db.execute(
+            "INSERT INTO stock_log (product_id, change_amount, reason, log_date) VALUES (?, ?, ?, ?)",
+            (product_id, new_qty - old_qty, "Manual stock update", str(date.today())),
         )
         db.commit()
         db.close()
@@ -313,6 +320,21 @@ def sales_summary():
 
     db.close()
     return render_template("sales_summary.html", total_revenue=total_revenue, by_product=by_product)
+
+
+@app.route("/stock-log")
+@login_required
+def stock_log():
+    db = get_db()
+    logs = db.execute("""
+        SELECT stock_log.log_date, products.name, products.size,
+               stock_log.change_amount, stock_log.reason
+        FROM stock_log
+        JOIN products ON stock_log.product_id = products.id
+        ORDER BY stock_log.id DESC
+    """).fetchall()
+    db.close()
+    return render_template("stock_log.html", logs=logs)
 
 
 if __name__ == "__main__":

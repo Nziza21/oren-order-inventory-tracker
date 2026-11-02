@@ -23,3 +23,12 @@ CREATE TABLE order_items (
     FOREIGN KEY (order_id) REFERENCES orders(id),
     FOREIGN KEY (product_id) REFERENCES products(id)
 );
+
+CREATE TABLE IF NOT EXISTS stock_log (
+    id INTEGER PRIMARY KEY,
+    product_id INTEGER NOT NULL,
+    change_amount INTEGER NOT NULL,
+    reason TEXT NOT NULL,
+    log_date TEXT NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
