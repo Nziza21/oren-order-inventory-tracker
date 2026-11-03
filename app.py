@@ -191,6 +191,10 @@ def add_order():
                 "UPDATE products SET quantity = quantity - ? WHERE id = ?",
                 (total_quantity, product_id),
             )
+            db.execute(
+                "INSERT INTO stock_log (product_id, change_amount, reason, log_date) VALUES (?, ?, ?, ?)",
+                (product_id, -total_quantity, f"Order #{order_id}", str(date.today())),
+            )
 
         db.commit()
         db.close()
@@ -274,6 +278,10 @@ def cancel_order(order_id):
         db.execute(
             "UPDATE products SET quantity = quantity + ? WHERE id = ?",
             (item["quantity"], item["product_id"]),
+        )
+        db.execute(
+            "INSERT INTO stock_log (product_id, change_amount, reason, log_date) VALUES (?, ?, ?, ?)",
+            (item["product_id"], item["quantity"], f"Order #{order_id} cancelled", str(date.today())),
         )
 
     db.execute("DELETE FROM order_items WHERE order_id = ?", (order_id,))
