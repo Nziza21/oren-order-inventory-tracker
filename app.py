@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = "change-this-to-something-random"
+app.secret_key = os.environ["SECRET_KEY"]
 
 login_manager = LoginManager()
 login_manager.init_app(app)
