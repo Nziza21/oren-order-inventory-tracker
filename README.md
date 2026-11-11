@@ -24,6 +24,20 @@ Python (Flask), SQLite, HTML/CSS, Flask-Login
 ## Status
 Core features are built and tested locally with real ORÉN products and orders. Not deployed yet.
 
+## Screenshots
+
+**Products, with low-stock flags**
+
+![Products page](screenshots/products.png)
+
+**Order detail**
+
+![Order detail page](screenshots/order-detail.png)
+
+**Sales summary (paid orders only)**
+
+![Sales summary page](screenshots/sales-summary.png)
+
 ## Testing
 Testing was done by hand against real data, and it found and fixed these bugs:
 - Orders could sell more than was in stock
@@ -34,7 +48,6 @@ Testing was done by hand against real data, and it found and fixed these bugs:
 
 ## Known limitations and next steps
 - No live MoMo integration: the admin marks orders as paid by hand
-- The app's secret key is still set in the code and should move to an environment variable
 - CSRF protection is not added yet
 - Feedback from real use at ORÉN is still to come
 
