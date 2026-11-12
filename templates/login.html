@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ORÉN Login</title>
     <style>
         * { box-sizing: border-box; }
@@ -12,30 +13,38 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #efece7;
+            background: #f4f2ee;
             overflow: hidden;
         }
         .stage {
             position: fixed;
             top: -25%;
             bottom: -25%;
-            left: -15%;
-            right: -15%;
+            left: -20%;
+            right: -20%;
             transform: rotate(-8deg);
             display: flex;
             flex-direction: column;
             justify-content: center;
-            gap: 18px;
+            gap: 56px;
         }
         .row {
             display: flex;
-            gap: 18px;
+            align-items: center;
             width: max-content;
-            animation: slideLeft 70s linear infinite;
+            animation: slideLeft 90s linear infinite;
         }
         .row.right { animation-name: slideRight; }
-        .row:nth-child(2n) { animation-duration: 90s; }
-        .row:nth-child(3n) { animation-duration: 110s; }
+        .row:nth-child(2n) { animation-duration: 110s; }
+        .row:nth-child(3n) { animation-duration: 130s; }
+        .row img {
+            height: 110px;
+            width: auto;
+            flex: none;
+            margin-right: 90px;
+            opacity: 0.07;
+        }
+        .row:nth-child(odd) img { opacity: 0.045; }
         @keyframes slideLeft {
             from { transform: translateX(0); }
             to { transform: translateX(-50%); }
@@ -44,62 +53,50 @@
             from { transform: translateX(-50%); }
             to { transform: translateX(0); }
         }
-        .tile {
-            flex: none;
-            padding: 28px 36px;
-            border-radius: 8px;
-            font-size: 20px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-        .t0 { background: #ddd7cd; color: #9a9387; }
-        .t1 { background: #c9c2b6; color: #7d776b; }
-        .t2 { background: #1a1a2e; color: #6b6b8f; }
         .veil {
             position: fixed;
             top: 0;
             right: 0;
             bottom: 0;
             left: 0;
-            background: radial-gradient(circle at center, rgba(239,236,231,0.9) 0%, rgba(239,236,231,0.4) 55%, rgba(239,236,231,0) 100%);
+            background: radial-gradient(circle at center, rgba(244,242,238,0.92) 0%, rgba(244,242,238,0.5) 50%, rgba(244,242,238,0) 100%);
         }
         .card {
             position: relative;
             z-index: 2;
             background: white;
-            padding: 36px 32px;
-            border-radius: 10px;
+            padding: 38px 34px 34px;
+            border-radius: 12px;
             width: 100%;
-            max-width: 360px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+            max-width: 370px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
         }
-        h1 { margin: 0; font-size: 28px; letter-spacing: 3px; color: #1a1a2e; }
-        .sub { margin: 4px 0 24px; font-size: 14px; color: #666; }
-        label { display: block; font-size: 14px; color: #444; margin-bottom: 16px; }
+        .logo { height: 84px; display: block; margin-bottom: 10px; }
+        .sub { margin: 0 0 26px; font-size: 14px; color: #777; }
+        label { display: block; font-size: 14px; color: #444; margin-bottom: 18px; }
         input {
             width: 100%;
-            padding: 10px 12px;
+            padding: 11px 12px;
             margin-top: 6px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 14px;
         }
+        input:focus { outline: none; border-color: #111; }
         button {
             width: 100%;
-            background: #4a4ae0;
+            background: #111;
             color: white;
             border: none;
-            padding: 11px;
-            border-radius: 4px;
+            padding: 12px;
+            border-radius: 6px;
             font-size: 15px;
             cursor: pointer;
         }
-        button:hover { background: #3a3ac0; }
+        button:hover { background: #333; }
         @media (prefers-reduced-motion: reduce) {
             .row { animation: none; }
         }
-        .logo { height: 84px; display: block; margin-bottom: 14px; }
     </style>
 </head>
 <body>
@@ -116,19 +113,17 @@
         </form>
     </div>
     <script>
-        var words = ["The Threshold", "Tailored Shirt", "Suit Jacket", "Tailored Trouser", "Becoming", "ORÉN", "Mid-process", "Quietly confident"];
+        var src = "{{ url_for('static', filename='logo-full-dark.png') }}";
         var stage = document.getElementById("stage");
-        for (var r = 0; r < 9; r++) {
+        for (var r = 0; r < 8; r++) {
             var row = document.createElement("div");
             row.className = "row " + (r % 2 ? "left" : "right");
-            var html = "";
-            for (var k = 0; k < 4; k++) {
-                for (var i = 0; i < words.length; i++) {
-                    var w = words[(i + r * 3) % words.length];
-                    html += '<span class="tile t' + ((i + r) % 3) + '">' + w + '</span>';
-                }
+            row.style.animationDelay = "-" + (r * 17) + "s";
+            var group = "";
+            for (var k = 0; k < 12; k++) {
+                group += '<img src="' + src + '" alt="">';
             }
-            row.innerHTML = html;
+            row.innerHTML = group + group;
             stage.appendChild(row);
         }
     </script>
