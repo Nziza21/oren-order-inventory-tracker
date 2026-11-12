@@ -1,27 +1,47 @@
 {% extends "base.html" %}
 {% block title %}ORÉN Products{% endblock %}
 {% block content %}
-<h1>ORÉN Products</h1>
-<p><a href="/products/add">+ Add Product</a></p>
-<table border="1" cellpadding="8">
+{% set low = products | selectattr('quantity', 'lt', 5) | list %}
+<div class="page-head">
+    <h1>Products</h1>
+    <a class="btn" href="/products/add">+ Add Product</a>
+</div>
+<div class="stats">
+    <div class="stat">
+        <div class="n">{{ products | length }}</div>
+        <div class="l">Products</div>
+    </div>
+    <div class="stat warn">
+        <div class="n">{{ low | length }}</div>
+        <div class="l">Low or out of stock</div>
+    </div>
+</div>
+<table>
     <tr>
         <th>Name</th>
         <th>Size</th>
         <th>Price (RWF)</th>
-        <th>Quantity</th>
-        <th>Action</th>
+        <th>Stock</th>
+        <th>Actions</th>
     </tr>
     {% for product in products %}
     <tr>
         <td>{{ product.name }}</td>
         <td>{{ product.size }}</td>
-        <td>{{ product.price }}</td>
-        {% if product.quantity < 5 %}
-        <td style="color: red; font-weight: bold;">{{ product.quantity }} (Low stock)</td>
-        {% else %}
-        <td>{{ product.quantity }}</td>
-        {% endif %}
-        <td><a href="/products/{{ product.id }}/update_stock">Update stock</a> | <a href="/products/{{ product.id }}/edit">Edit</a></td>
+        <td>{{ '{:,}'.format(product.price | int) }}</td>
+        <td>
+            {% if product.quantity == 0 %}
+            <span class="badge out">Out of stock</span>
+            {% elif product.quantity < 5 %}
+            <span class="badge low">{{ product.quantity }} · Low</span>
+            {% else %}
+            <span class="badge ok">{{ product.quantity }}</span>
+            {% endif %}
+        </td>
+        <td class="act">
+            <a href="/products/{{ product.id }}/update_stock">Update stock</a>
+            <a href="/products/{{ product.id }}/edit">Edit</a>
+        </td>
     </tr>
     {% endfor %}
 </table>

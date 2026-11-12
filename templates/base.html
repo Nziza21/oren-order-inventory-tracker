@@ -1,85 +1,156 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}ORÉN Tracker{% endblock %}</title>
     <style>
-    * { box-sizing: border-box; }
-    body {
-        font-family: 'Segoe UI', Arial, sans-serif;
-        margin: 0;
-        background: #f4f5f7;
-        color: #222;
-    }
-    nav {
-        background: #1a1a2e;
-        padding: 14px 24px;
-        display: flex;
-        gap: 20px;
-    }
-    nav a {
-        color: #e0e0e0;
-        text-decoration: none;
-        font-weight: 500;
-        font-size: 14px;
-        padding: 6px 10px;
-        border-radius: 4px;
-        transition: background 0.2s;
-    }
-    nav a:hover { background: #2e2e4d; color: #fff; }
-    .content { padding: 30px; max-width: 1000px; margin: 0 auto; }
-    h1 { font-size: 24px; margin-bottom: 20px; color: #1a1a2e; }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        background: white;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    th, td {
-        padding: 12px 16px;
-        text-align: left;
-        border-bottom: 1px solid #eee;
-    }
-    th {
-        background: #1a1a2e;
-        color: white;
-        font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    tr:hover { background: #f9f9fb; }
-    a { color: #4a4ae0; }
-    form { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 400px; }
-    label { display: block; margin-bottom: 12px; font-size: 14px; color: #444; }
-    input, select {
-        width: 100%;
-        padding: 8px 10px;
-        margin-top: 4px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
-    }
-    button {
-        background: #4a4ae0;
-        color: white;
-        border: none;
-        padding: 10px 18px;
-        border-radius: 4px;
-        font-size: 14px;
-        cursor: pointer;
-    }
-    button:hover { background: #3a3ac0; }
-</style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            background: #f6f4f0;
+            color: #222;
+        }
+        nav {
+            background: #1a1a2e;
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 60px;
+        }
+        .brand {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 4px;
+            margin-right: 28px;
+        }
+        nav a.link {
+            color: #b8b8cc;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 14px;
+            border-radius: 6px;
+        }
+        nav a.link:hover { background: #2a2a47; color: white; }
+        nav a.link.active { background: #2f2f55; color: white; }
+        nav .spacer { flex: 1; }
+        .content { padding: 36px 32px; max-width: 1040px; margin: 0 auto; }
+        h1 { font-size: 26px; margin: 0 0 22px; color: #1a1a2e; }
+        .page-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+        }
+        .page-head h1 { margin: 0; }
+        a { color: #4a4ae0; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .btn {
+            display: inline-block;
+            background: #4a4ae0;
+            color: white;
+            padding: 9px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .btn:hover { background: #3a3ac0; text-decoration: none; }
+        .stats { display: flex; gap: 16px; margin-bottom: 22px; }
+        .stat {
+            flex: 1;
+            background: white;
+            border-radius: 10px;
+            padding: 16px 22px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .stat .n { font-size: 28px; font-weight: 600; color: #1a1a2e; }
+        .stat .l { font-size: 13px; color: #777; margin-top: 2px; }
+        .stat.warn .n { color: #c62828; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: none;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        th, td {
+            padding: 14px 18px;
+            text-align: left;
+            border: none;
+            border-bottom: 1px solid #f0eeea;
+        }
+        th {
+            background: #fafaf8;
+            color: #777;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 600;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fbfaf8; }
+        .act a {
+            display: inline-block;
+            font-size: 13px;
+            padding: 5px 10px;
+            margin-right: 4px;
+            border-radius: 5px;
+            background: #eeeefc;
+        }
+        .act a:hover { background: #dedefa; text-decoration: none; }
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge.ok { background: #e6f4ea; color: #1e7a3c; }
+        .badge.low { background: #fdecea; color: #c62828; }
+        .badge.out { background: #ececec; color: #666; }
+        form {
+            background: white;
+            padding: 22px;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            max-width: 420px;
+        }
+        label { display: block; margin-bottom: 14px; font-size: 14px; color: #444; }
+        input, select {
+            width: 100%;
+            padding: 9px 11px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        button {
+            background: #4a4ae0;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        button:hover { background: #3a3ac0; }
+        .logo { height: 30px; display: block; margin-right: 28px; }
+    </style>
 </head>
 <body>
     <nav>
-        <a href="/products">Products</a>
-        <a href="/orders">Orders</a>
-        <a href="/orders/add">New Order</a>
-        <a href="/sales-summary">Sales Summary</a>
-        <a href="/stock-log">Stock History</a>
-        <a href="/logout">Logout</a>
+        <a href="/products"><img src="{{ url_for('static', filename='logo-nav-white.png') }}" alt="ORÉN" class="logo"></a>
+        <a class="link {% if request.path.startswith('/products') %}active{% endif %}" href="/products">Products</a>
+        <a class="link {% if request.path.startswith('/orders') and request.path != '/orders/add' %}active{% endif %}" href="/orders">Orders</a>
+        <a class="link {% if request.path == '/orders/add' %}active{% endif %}" href="/orders/add">New Order</a>
+        <a class="link {% if request.path == '/sales-summary' %}active{% endif %}" href="/sales-summary">Sales Summary</a>
+        <a class="link {% if request.path == '/stock-log' %}active{% endif %}" href="/stock-log">Stock History</a>
+        <span class="spacer"></span>
+        <a class="link" href="/logout">Logout</a>
     </nav>
     <div class="content">
         {% block content %}{% endblock %}
