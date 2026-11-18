@@ -55,8 +55,15 @@ Testing was done by hand against real data, and it found and fixed these bugs:
 A step-by-step guide is in [USER_GUIDE.md](USER_GUIDE.md).
 
 ## Setup
-1. Clone the repo and create a virtual environment
-2. `pip install flask flask-login python-dotenv werkzeug`
-3. Create a `.env` file with `ADMIN_PASSWORD=yourpassword`
-4. Run `python3 init_db.py` once to create the database
-5. Run `python3 app.py`
+1. Clone the repo:
+   `git clone https://github.com/Nziza21/oren-order-inventory-tracker.git` then `cd oren-order-inventory-tracker`
+2. Create and activate a virtual environment:
+   `python3 -m venv venv` then `source venv/bin/activate` (on Windows: `venv\\Scripts\\activate`)
+3. Install the packages: `pip install -r requirements.txt`
+4. Create a file called `.env` in the project folder with two lines:
+   `ADMIN_PASSWORD=choose-a-password`
+   `SECRET_KEY=any-long-random-text`
+   To generate a key: `python3 -c "import secrets; print(secrets.token_hex(32))"`
+5. Create the database with sample products (run this once): `python3 init_db.py`
+6. Start the app: `python3 app.py`
+7. Open http://127.0.0.1:5000/login and log in with the password from your `.env`
