@@ -15,6 +15,7 @@ Python (Flask), SQLite, HTML/CSS, Flask-Login
 - Multi-item orders with automatic stock reduction
 - Checks that block overselling, zero or negative quantities, and the same product repeated across rows
 - Order status (new, packed, delivered) and payment status (paid, unpaid)
+- Payment reference (for example the MoMo transaction ID) saved on each order
 - Order detail page with items, prices, and subtotal
 - Order cancellation that returns stock (blocked for delivered orders)
 - Search orders by customer name, and a customer order history page

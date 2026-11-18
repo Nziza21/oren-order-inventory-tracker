@@ -12,7 +12,8 @@ CREATE TABLE orders (
     customer TEXT NOT NULL,
     order_date TEXT NOT NULL,
     payment_status TEXT NOT NULL,
-    order_status TEXT NOT NULL
+    order_status TEXT NOT NULL,
+    payment_reference TEXT
 );
 
 CREATE TABLE order_items (
