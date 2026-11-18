@@ -18,6 +18,7 @@ Python (Flask), SQLite, HTML/CSS, Flask-Login
 - Payment reference (for example the MoMo transaction ID) saved on each order
 - Order detail page with items, prices, and subtotal
 - Order cancellation that returns stock (blocked for delivered orders)
+- Search products by name or size
 - Search orders by customer name, and a customer order history page
 - Sales summary showing revenue from paid orders only, and units sold per product
 - Stock history log recording every stock change with its date and reason

@@ -63,10 +63,17 @@ def home():
 @app.route("/products")
 @login_required
 def products():
+    query = request.args.get("q", "").strip()
     db = get_db()
-    all_products = db.execute("SELECT * FROM products").fetchall()
+    if query:
+        all_products = db.execute(
+            "SELECT * FROM products WHERE name LIKE ? OR size LIKE ?",
+            (f"%{query}%", f"%{query}%"),
+        ).fetchall()
+    else:
+        all_products = db.execute("SELECT * FROM products").fetchall()
     db.close()
-    return render_template("products.html", products=all_products)
+    return render_template("products.html", products=all_products, search_query=query)
 
 
 @app.route("/products/add", methods=["GET", "POST"])

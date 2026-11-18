@@ -16,6 +16,10 @@
         <div class="l">Low or out of stock</div>
     </div>
 </div>
+<form method="GET" action="/products" style="margin-bottom: 22px; padding: 14px; display: flex; gap: 10px; max-width: none;">
+    <input type="text" name="q" placeholder="Search products by name or size" value="{{ search_query or '' }}" style="margin-top: 0;">
+    <button type="submit">Search</button>
+</form>
 <table>
     <tr>
         <th>Name</th>
