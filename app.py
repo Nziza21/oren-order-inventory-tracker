@@ -6,7 +6,8 @@ from flask import Flask, render_template, request, redirect, url_for
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
-load_dotenv()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 app = Flask(__name__)
 app.secret_key = os.environ["SECRET_KEY"]
@@ -30,7 +31,7 @@ def load_user(user_id):
 
 
 def get_db():
-    connection = sqlite3.connect("oren.db")
+    connection = sqlite3.connect(os.path.join(BASE_DIR, "oren.db"))
     connection.row_factory = sqlite3.Row
     return connection
 
