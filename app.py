@@ -248,8 +248,8 @@ def update_order(order_id):
 
     if request.method == "POST":
         db.execute(
-            "UPDATE orders SET payment_status = ?, order_status = ? WHERE id = ?",
-            (request.form["payment_status"], request.form["order_status"], order_id),
+            "UPDATE orders SET payment_status = ?, order_status = ?, payment_reference = ? WHERE id = ?",
+            (request.form["payment_status"], request.form["order_status"], request.form.get("payment_reference", "").strip() or None, order_id),
         )
         db.commit()
         db.close()

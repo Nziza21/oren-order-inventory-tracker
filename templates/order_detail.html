@@ -4,6 +4,7 @@
 <h1>Order #{{ order.id }} — {{ order.customer }}</h1>
 <p>Date: {{ order.order_date }}</p>
 <p>Payment: {{ order.payment_status }}</p>
+<p>Payment reference: {{ order.payment_reference or "Not recorded" }}</p>
 <p>Status: {{ order.order_status }}</p>
 <table>
     <tr>

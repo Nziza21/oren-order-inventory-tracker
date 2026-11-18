@@ -16,6 +16,9 @@
             <option value="delivered" {% if order.order_status == "delivered" %}selected{% endif %}>Delivered</option>
         </select>
     </label><br><br>
+    <label>Payment reference (for example the MoMo transaction ID)
+        <input type="text" name="payment_reference" value="{{ order.payment_reference or '' }}">
+    </label>
     <button type="submit">Save</button>
 </form>
 {% endblock %}
