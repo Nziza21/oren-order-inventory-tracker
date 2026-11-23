@@ -2,6 +2,11 @@
 
 A web app for ORÉN RWANDA LTD to track stock, record customer orders, and follow payment and fulfillment status.
 
+## Live demo
+https://nziza21.pythonanywhere.com/login
+
+Log in with the password `Accessit123`. The live copy holds sample data only, and the free hosting plan needs to be renewed each month.
+
 ## Problem
 ORÉN's orders and stock were tracked in WhatsApp chats and from memory, which caused missed orders, overselling, and payments that couldn't be matched to an order.
 
